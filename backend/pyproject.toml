@@ -1,0 +1,26 @@
+[project]
+name = "exam-tool-demo-backend"
+version = "0.1.0"
+description = "FastAPI backend for the PRD-first exam tool demo"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.116,<1",
+  "httpx>=0.28,<1",
+  "pydantic-settings>=2.10,<3",
+  "uvicorn[standard]>=0.35,<1",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.4,<10",
+  "pytest-asyncio>=1,<2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+asyncio_mode = "auto"
+pythonpath = ["."]
+
+[tool.uv]
+package = false
