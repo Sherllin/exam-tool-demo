@@ -24,10 +24,16 @@
 - Python 3.12 或更高
 - [uv](https://docs.astral.sh/uv/)
 
+## 获取源码
+
+```bash
+git clone https://github.com/Sherllin/exam-tool-demo.git
+cd exam-tool-demo
+```
+
 ## 一键启动
 
 ```bash
-cd /Users/hesl/Desktop/exam-tool-demo
 make setup
 make dev
 ```
@@ -39,7 +45,6 @@ make dev
 默认无需密钥即可完整演示。若要调用兼容 Chat Completions 的模型服务：
 
 ```bash
-cd /Users/hesl/Desktop/exam-tool-demo
 cp backend/.env.example backend/.env
 ```
 
@@ -66,6 +71,7 @@ make verify
 项目使用两个容器：Next.js 仅暴露宿主机 3002 端口，FastAPI 只在 Compose 内部网络监听，不占用宿主机 8000 端口。
 
 ```bash
+cp .env.example .env
 docker compose build
 docker compose up -d
 docker compose ps
@@ -77,7 +83,7 @@ docker compose ps
 docker compose down
 ```
 
-服务器部署目录固定为 `/home/hesl/exam-tool-demo`，项目文件、Compose 配置和可选 `.env` 均只放在这一目录下。
+当前演示服务器部署目录为 `/home/hesl/exam-tool-demo`。其他环境可使用任意独立目录，但项目文件、Compose 配置和可选 `.env` 应放在同一项目目录内。
 
 ## 项目结构
 
