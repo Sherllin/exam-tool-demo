@@ -726,3 +726,95 @@ p {
   .data-table td { border: 1px solid #d8d8d8; padding: 9px 10px; }
   .print-footer { margin-top: 14px; }
 }
+
+/* ===== 英语作文 AI 阅卷 ===== */
+.essay-input {
+  width: 100%;
+  min-height: 150px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+  line-height: 1.7;
+  resize: vertical;
+  background: white;
+  color: var(--text);
+}
+.essay-input:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgb(0 96 230 / 10%);
+}
+.essay-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+.essay-result {
+  display: grid;
+  gap: 18px;
+}
+.essay-score-head {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+}
+.essay-total,
+.essay-calibrated {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.essay-total-value {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+}
+.essay-calibrated .essay-total-value { color: var(--brand); }
+.essay-total-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+.essay-level {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-left: auto;
+}
+.essay-source-note {
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 320px;
+}
+.essay-comment {
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgb(0 96 230 / 4%);
+  color: var(--text);
+  line-height: 1.7;
+}
+.essay-feedback-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.essay-suggestion {
+  color: var(--text);
+  line-height: 1.7;
+  padding: 4px 0 8px;
+}
+@media (max-width: 720px) {
+  .essay-score-head { flex-wrap: wrap; gap: 18px; }
+  .essay-level { margin-left: 0; }
+  .essay-feedback-grid { grid-template-columns: 1fr; }
+}

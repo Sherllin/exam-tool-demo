@@ -9,10 +9,13 @@ from app.demo_data import (
     STUDENT_SCORES,
     SUBJECTS,
 )
+from app.essay import grade_essay
 from app.llm import suggest_title
 from app.models import (
     ClassAverageResponse,
     DashboardResponse,
+    EssayGradeRequest,
+    EssayGradeResponse,
     HealthResponse,
     PrintDataResponse,
     TitleSuggestionRequest,
@@ -93,3 +96,14 @@ async def title_suggestion(
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> TitleSuggestionResponse:
     return await suggest_title(request, settings)
+
+
+@app.post(
+    "/api/essay/grade",
+    response_model=EssayGradeResponse,
+)
+async def essay_grade(
+    request: EssayGradeRequest,
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> EssayGradeResponse:
+    return await grade_essay(request, settings)

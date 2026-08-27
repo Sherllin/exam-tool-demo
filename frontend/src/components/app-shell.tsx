@@ -9,12 +9,14 @@ const navigation = [
   { href: "/", label: "成绩发布" },
   { href: "/print", label: "打印配置" },
   { href: "/comparison", label: "班级对比" },
+  { href: "/essay-grading", label: "作文阅卷" },
 ];
 
 
 function breadcrumb(pathname: string): string {
   if (pathname === "/print") return "考试管理  >  成绩打印配置";
   if (pathname === "/comparison") return "考试管理  >  班级平均分对比";
+  if (pathname === "/essay-grading") return "考试管理  >  英语作文 AI 阅卷";
   return "考试管理  >  成绩发布总览";
 }
 

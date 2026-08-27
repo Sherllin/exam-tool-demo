@@ -73,3 +73,23 @@ export interface TitleSuggestionRequest {
   grade: string;
   document_type: string;
 }
+
+export interface EssayGrade {
+  total: number;
+  content: number;
+  language: number;
+  structure: number;
+  vocabulary: number;
+  calibrated_total: number;
+  level: string;
+  comment: string;
+  strengths: string[];
+  weaknesses: string[];
+  suggestions: string;
+  source: "provider" | "fallback";
+  message: string;
+}
+
+export interface EssayGradeRequest {
+  essay_text: string;
+}

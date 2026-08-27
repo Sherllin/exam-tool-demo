@@ -73,3 +73,23 @@ class TitleSuggestionResponse(BaseModel):
     title: str
     source: Literal["provider", "fallback"]
     message: str
+
+
+class EssayGradeRequest(BaseModel):
+    essay_text: str = Field(min_length=20, max_length=5000)
+
+
+class EssayGradeResponse(BaseModel):
+    total: int = Field(ge=0, le=100)
+    content: int = Field(ge=0, le=40)
+    language: int = Field(ge=0, le=30)
+    structure: int = Field(ge=0, le=15)
+    vocabulary: int = Field(ge=0, le=15)
+    calibrated_total: int = Field(ge=0, le=100)
+    level: str
+    comment: str
+    strengths: list[str]
+    weaknesses: list[str]
+    suggestions: str
+    source: Literal["provider", "fallback"]
+    message: str

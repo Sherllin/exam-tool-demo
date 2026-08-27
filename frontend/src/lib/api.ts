@@ -1,6 +1,8 @@
 import type {
   ClassAverageData,
   DashboardData,
+  EssayGrade,
+  EssayGradeRequest,
   PrintData,
   TitleSuggestion,
   TitleSuggestionRequest,
@@ -68,6 +70,14 @@ export function requestTitleSuggestion(
   body: TitleSuggestionRequest,
 ): Promise<TitleSuggestion> {
   return fetchJson<TitleSuggestion>("/api/llm/title-suggestion", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+
+export function gradeEssay(body: EssayGradeRequest): Promise<EssayGrade> {
+  return fetchJson<EssayGrade>("/api/essay/grade", {
     method: "POST",
     body: JSON.stringify(body),
   });
