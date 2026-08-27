@@ -32,7 +32,7 @@ make setup
 make dev
 ```
 
-浏览器打开 <http://127.0.0.1:3000>。FastAPI 文档位于 <http://127.0.0.1:8000/docs>。
+浏览器打开 <http://127.0.0.1:3002>。FastAPI 文档位于 <http://127.0.0.1:8000/docs>。
 
 ## 可选：连接 LLM
 
