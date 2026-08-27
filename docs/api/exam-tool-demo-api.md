@@ -20,6 +20,7 @@
 | GET | `/api/exams/{exam_id}/print-data` | 获取成绩单打印数据与字段配置 |
 | GET | `/api/exams/{exam_id}/class-averages` | 获取指定年级的班级平均分 |
 | POST | `/api/llm/title-suggestion` | 生成可编辑的成绩单标题建议 |
+| POST | `/api/essay/grade` | 英语作文 AI 阅卷：四维评分 + 分段校准 |
 
 ## GET `/api/health`
 
@@ -89,10 +90,49 @@ GET /api/exams/exam-2026-09/class-averages?grade=高二
 
 `source` 为 `provider` 时表示结果来自模型服务；为 `fallback` 时表示未配置模型或调用失败。模型服务需兼容 Chat Completions，通过 `LLM_BASE_URL`、`LLM_API_KEY`、`LLM_MODEL` 和 `LLM_TIMEOUT_SECONDS` 配置。
 
+## POST `/api/essay/grade`
+
+英语作文 AI 阅卷：按四个维度（内容 40 / 语言 30 / 结构 15 / 词汇 15，总分 100）评分，并对 AI 原始总分应用 3 段分段校准修正（与独立评测同源系数，测试集 MAE 6.1）。
+
+请求体：
+
+```json
+{
+  "essay_text": "Last weekend I went to the park with my family..."
+}
+```
+
+| 字段 | 类型 | 必填 | 长度 |
+| --- | --- | --- | --- |
+| `essay_text` | string | 是 | 20～5000 |
+
+响应示例：
+
+```json
+{
+  "total": 78,
+  "content": 32,
+  "language": 23,
+  "structure": 12,
+  "vocabulary": 11,
+  "calibrated_total": 79,
+  "level": "良好",
+  "comment": "内容较充实，语言基本流畅。",
+  "strengths": ["要点覆盖较全", "衔接自然"],
+  "weaknesses": ["个别时态错误", "词汇稍显单一"],
+  "suggestions": "注意时态一致性，尝试使用更多高级词汇。",
+  "source": "provider",
+  "message": "评分由已配置的 LLM 生成，并经分段校准修正"
+}
+```
+
+`source` 为 `provider` 时表示评分来自模型服务；为 `fallback` 时表示未配置模型、调用失败或返回格式异常，此时返回本地演示评分（确定性文本质量特征评分）。`level` 为 `优秀 | 良好 | 中等 | 较差` 四档。
+
 ## 源码位置
 
 - 路由：`backend/app/main.py`
 - 请求与响应模型：`backend/app/models.py`
 - LLM 适配器：`backend/app/llm.py`
+- 作文评分核心：`backend/app/essay.py`（评分 Prompt、JSON 解析、分段校准、本地降级）
 - 前端 API 封装：`frontend/src/lib/api.ts`
 - FastAPI 自动文档：`http://127.0.0.1:8000/docs`
