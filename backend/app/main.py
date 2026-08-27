@@ -9,9 +9,11 @@ from app.demo_data import (
     STUDENT_SCORES,
     SUBJECTS,
 )
-from app.essay import grade_essay
+from app.essay import grade_essay, grade_essay_batch
 from app.llm import suggest_title
 from app.models import (
+    BatchGradeRequest,
+    BatchGradeResponse,
     ClassAverageResponse,
     DashboardResponse,
     EssayGradeRequest,
@@ -107,3 +109,14 @@ async def essay_grade(
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> EssayGradeResponse:
     return await grade_essay(request, settings)
+
+
+@app.post(
+    "/api/essay/grade-batch",
+    response_model=BatchGradeResponse,
+)
+async def essay_grade_batch(
+    request: BatchGradeRequest,
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> BatchGradeResponse:
+    return await grade_essay_batch(request, settings)

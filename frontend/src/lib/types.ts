@@ -92,4 +92,40 @@ export interface EssayGrade {
 
 export interface EssayGradeRequest {
   essay_text: string;
+  prompt?: string;
+  rubric?: string;
+}
+
+export interface BatchEssayItem {
+  student_no: string;
+  name: string;
+  essay_text: string;
+}
+
+export interface BatchGradeItem {
+  student_no: string;
+  name: string;
+  grade: EssayGrade;
+}
+
+export interface BatchGradeStats {
+  count: number;
+  avg_total: number;
+  avg_calibrated: number;
+  max_total: number;
+  min_total: number;
+  level_distribution: Record<string, number>;
+}
+
+export interface BatchGradeRequest {
+  prompt?: string;
+  rubric?: string;
+  essays: BatchEssayItem[];
+}
+
+export interface BatchGradeResponse {
+  items: BatchGradeItem[];
+  stats: BatchGradeStats;
+  source: "provider" | "fallback" | "mixed";
+  message: string;
 }

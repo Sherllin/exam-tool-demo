@@ -6,13 +6,24 @@
   保证默认无密钥也能完整演示。
 """
 
+import asyncio
 import json
 import re
 
 import httpx
 
-from app.models import EssayGradeRequest, EssayGradeResponse
+from app.models import (
+    BatchEssayItem,
+    BatchGradeItem,
+    BatchGradeResponse,
+    BatchGradeStats,
+    EssayGradeRequest,
+    EssayGradeResponse,
+)
 from app.settings import Settings
+
+# 批量评分时的并发上限：LLM 场景避免打爆上游，本地降级场景近乎即时。
+BATCH_CONCURRENCY = 5
 
 # 评分系统提示词：要求模型严格按维度打分、拉开梯度（与独立评测脚本同源）
 ESSAY_SYSTEM_PROMPT = """你是一名资深高中英语阅卷老师，负责英语作文评分。
@@ -134,10 +145,11 @@ def _text_quality_features(text: str) -> dict:
     }
 
 
-def _fallback_grade(text: str) -> dict:
+def _fallback_grade(text: str, prompt: str | None = None, rubric: str | None = None) -> dict:
     """本地确定性评分：质量分 0-10，总分 = 40 + quality×6，维度按权重分摊。
 
     与 provider 模式返回同构 JSON，便于前端一致渲染。
+    prompt/rubric 仅用于评语提示（本地模式不依赖题目相关性打分）。
     """
     f = _text_quality_features(text)
     q_wps = _clamp((f["words_per_sentence"] - 5) * 1.0, 0, 10)
@@ -163,7 +175,10 @@ def _fallback_grade(text: str) -> dict:
         "comment": f"本地演示评分（质量分 {quality:.1f}）：文本较{'丰富' if quality >= 6 else '单薄'}，建议配置 LLM 获取详细评语",
         "strengths": [],
         "weaknesses": [],
-        "suggestions": "配置 LLM 后可使用完整四维评分与逐项评语",
+        "suggestions": (
+            "配置 LLM 后可使用完整四维评分与逐项评语"
+            + ("；已提供题目/评分标准，本地模式仅按文本质量评分" if (prompt or rubric) else "")
+        ),
     }
 
 
@@ -173,13 +188,20 @@ async def grade_essay(
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> EssayGradeResponse:
     if not settings.llm_is_configured:
-        grade = _fallback_grade(request.essay_text)
+        grade = _fallback_grade(request.essay_text, request.prompt, request.rubric)
         return EssayGradeResponse(
             **grade,
             calibrated_total=apply_calibration(grade["total"]),
             source="fallback",
             message="未配置 LLM，当前为本地演示评分",
         )
+
+    system_content = ESSAY_SYSTEM_PROMPT
+    if request.rubric:
+        system_content += f"\n\n本次考试评分标准（务必以此为准）：\n{request.rubric}"
+    user_content = f"请评分以下英语作文：\n\n{request.essay_text}"
+    if request.prompt:
+        user_content = f"作文题目：{request.prompt}\n\n{user_content}"
 
     endpoint = f"{settings.llm_base_url.rstrip('/')}/chat/completions"
     payload = {
@@ -188,8 +210,8 @@ async def grade_essay(
         "max_tokens": 1200,
         "response_format": {"type": "json_object"},
         "messages": [
-            {"role": "system", "content": ESSAY_SYSTEM_PROMPT},
-            {"role": "user", "content": f"请评分以下英语作文：\n\n{request.essay_text}"},
+            {"role": "system", "content": system_content},
+            {"role": "user", "content": user_content},
         ],
     }
 
@@ -210,7 +232,7 @@ async def grade_essay(
         grade = None
 
     if grade is None:
-        grade = _fallback_grade(request.essay_text)
+        grade = _fallback_grade(request.essay_text, request.prompt, request.rubric)
         return EssayGradeResponse(
             **grade,
             calibrated_total=apply_calibration(grade["total"]),
@@ -223,4 +245,66 @@ async def grade_essay(
         calibrated_total=apply_calibration(grade["total"]),
         source="provider",
         message="评分由已配置的 LLM 生成，并经分段校准修正",
+    )
+
+
+async def grade_essay_batch(
+    request: BatchGradeRequest,
+    settings: Settings,
+    transport: httpx.AsyncBaseTransport | None = None,
+) -> BatchGradeResponse:
+    """批量评分：并发调用单篇评分，聚合结果并给出统计汇总。"""
+    essays: list[BatchEssayItem] = request.essays
+    semaphore = asyncio.Semaphore(BATCH_CONCURRENCY)
+
+    async def _limited(item: BatchEssayItem) -> EssayGradeResponse:
+        async with semaphore:
+            return await grade_essay(
+                EssayGradeRequest(
+                    essay_text=item.essay_text,
+                    prompt=request.prompt,
+                    rubric=request.rubric,
+                ),
+                settings,
+                transport,
+            )
+
+    results = await asyncio.gather(*(_limited(item) for item in essays))
+
+    items = [
+        BatchGradeItem(student_no=item.student_no, name=item.name, grade=result)
+        for item, result in zip(essays, results)
+    ]
+    stats = _build_stats(items)
+    sources = {item.grade.source for item in items}
+    if sources == {"provider"}:
+        source = "provider"
+    elif sources == {"fallback"}:
+        source = "fallback"
+    else:
+        source = "mixed"
+    message = {
+        "provider": "批量评分已全部由已配置的 LLM 生成，并经分段校准修正",
+        "fallback": "批量评分已全部由本地演示评分生成（未配置 LLM）",
+        "mixed": "批量评分结果来源混合（部分 LLM、部分本地回退）",
+    }[source]
+
+    return BatchGradeResponse(items=items, stats=stats, source=source, message=message)
+
+
+def _build_stats(items: list[BatchGradeItem]) -> BatchGradeStats:
+    """基于批量结果计算平均分（原始/校准）、极值与等级分布。"""
+    totals = [item.grade.total for item in items]
+    calibrated = [item.grade.calibrated_total for item in items]
+    count = len(totals)
+    distribution: dict[str, int] = {}
+    for item in items:
+        distribution[item.grade.level] = distribution.get(item.grade.level, 0) + 1
+    return BatchGradeStats(
+        count=count,
+        avg_total=round(sum(totals) / count, 1) if count else 0.0,
+        avg_calibrated=round(sum(calibrated) / count, 1) if count else 0.0,
+        max_total=max(totals) if count else 0,
+        min_total=min(totals) if count else 0,
+        level_distribution=distribution,
     )

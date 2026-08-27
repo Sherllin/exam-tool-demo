@@ -1,4 +1,6 @@
 import type {
+  BatchGradeRequest,
+  BatchGradeResponse,
   ClassAverageData,
   DashboardData,
   EssayGrade,
@@ -78,6 +80,13 @@ export function requestTitleSuggestion(
 
 export function gradeEssay(body: EssayGradeRequest): Promise<EssayGrade> {
   return fetchJson<EssayGrade>("/api/essay/grade", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function gradeEssayBatch(body: BatchGradeRequest): Promise<BatchGradeResponse> {
+  return fetchJson<BatchGradeResponse>("/api/essay/grade-batch", {
     method: "POST",
     body: JSON.stringify(body),
   });
