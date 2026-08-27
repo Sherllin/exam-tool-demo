@@ -61,6 +61,24 @@ make verify
 
 该命令依次执行后端 pytest、前端 Vitest、TypeScript 类型检查和 Next.js 生产构建。
 
+## Docker 部署
+
+项目使用两个容器：Next.js 仅暴露宿主机 3002 端口，FastAPI 只在 Compose 内部网络监听，不占用宿主机 8000 端口。
+
+```bash
+docker compose build
+docker compose up -d
+docker compose ps
+```
+
+停止服务：
+
+```bash
+docker compose down
+```
+
+服务器部署目录固定为 `/home/hesl/exam-tool-demo`，项目文件、Compose 配置和可选 `.env` 均只放在这一目录下。
+
 ## 项目结构
 
 ```text

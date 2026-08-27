@@ -1,0 +1,34 @@
+name: exam-tool-demo
+
+services:
+  backend:
+    container_name: exam-tool-demo-backend
+    build:
+      context: ./backend
+    environment:
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-12}
+    restart: unless-stopped
+    networks:
+      - exam-tool-network
+
+  frontend:
+    container_name: exam-tool-demo-frontend
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${EXAM_TOOL_PORT:-3002}:3002"
+    restart: unless-stopped
+    networks:
+      - exam-tool-network
+
+networks:
+  exam-tool-network:
+    name: exam-tool-demo-network
