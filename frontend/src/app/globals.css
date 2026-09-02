@@ -163,6 +163,11 @@ input:focus-visible {
 .page-stack {
   display: grid;
   gap: 28px;
+  min-width: 0;
+}
+
+.page-stack > * {
+  min-width: 0;
 }
 
 .page-heading {
@@ -691,16 +696,38 @@ p {
   .config-panel { max-width: none; }
 }
 
-@media (max-width: 760px) {
-  .app-shell { grid-template-columns: 76px minmax(0, 1fr); }
-  .sidebar { padding-left: 8px; padding-right: 8px; }
-  .brand { font-size: 0; padding-left: 0; padding-right: 0; text-align: center; }
-  .brand::after { content: "智阅"; font-size: 15px; }
-  .nav-section { font-size: 0; padding-left: 0; padding-right: 0; }
-  .nav-item { justify-content: center; padding: 0; }
-  .nav-item span:last-child { display: none; }
+@media (max-width: 900px) {
+  .app-shell { display: block; }
+  .sidebar {
+    height: auto;
+    min-height: 0;
+    padding: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .brand,
+  .nav-section,
   .sidebar-footer { display: none; }
-  .topbar { padding: 0 18px; }
+  .nav-list {
+    gap: 4px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .nav-item {
+    flex-direction: column;
+    font-size: 12px;
+    gap: 4px;
+    justify-content: center;
+    min-height: 48px;
+    padding: 4px;
+    text-align: center;
+  }
+  .nav-item span:last-child { display: inline; }
+  .topbar {
+    height: 56px;
+    padding: 0 18px;
+    top: 64px;
+  }
   .page-content { padding: 24px 16px 48px; }
   .page-heading { align-items: flex-start; flex-direction: column; }
   .check-row { grid-template-columns: 12px minmax(100px, 1fr) auto; padding: 12px 0; }
@@ -709,6 +736,33 @@ p {
   .title-row { grid-template-columns: 1fr; }
   .print-preview { padding: 32px 20px; }
   .preview-toolbar { align-items: flex-start; flex-direction: column; }
+  .action-card .secondary-button {
+    margin-top: 18px;
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    font-size: 12px;
+    height: 52px;
+    padding: 0 12px;
+  }
+  .page-content { padding: 20px 12px 40px; }
+  .page-stack { gap: 20px; }
+  .page-heading { gap: 12px; }
+  .page-heading h1 { font-size: 24px; }
+  .scope-banner,
+  .state-card { align-items: flex-start; padding: 14px 16px; }
+  .filter-card,
+  .table-card { padding: 16px; }
+  .config-panel { padding: 18px; }
+  .panel-heading,
+  .table-card-header { flex-direction: column; }
+  .preview-toolbar button { min-width: 0; width: 100%; }
+  .config-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .print-preview { padding: 28px 16px 22px; }
+  .print-footer { flex-wrap: wrap; gap: 8px; }
 }
 
 @media print {
@@ -1049,4 +1103,27 @@ p {
   .config-fields { grid-template-columns: 1fr; }
   .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .essay-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .grading-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .grading-tab { padding: 0 8px; }
+
+  .essay-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .essay-actions button,
+  .batch-toolbar .ai-button {
+    margin-left: 0;
+    min-width: 0;
+    width: 100%;
+  }
 }
