@@ -264,7 +264,7 @@ export default function EssayGradingPage() {
       </div>
 
       {tab === "single" ? (
-        <section className="filter-card" aria-label="单篇作文测试">
+        <section className="filter-card essay-single-card" aria-label="单篇作文测试">
           <label>
             <span>作文内容（英文）</span>
             <textarea
