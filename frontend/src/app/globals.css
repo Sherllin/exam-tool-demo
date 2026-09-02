@@ -245,6 +245,15 @@ p {
   position: relative;
 }
 
+.action-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.action-card .metric-meta {
+  padding-bottom: 20px;
+}
+
 .metric-label {
   font-size: 16px;
   font-weight: 600;
@@ -273,9 +282,9 @@ p {
 }
 
 .action-card .secondary-button {
-  bottom: 20px;
-  position: absolute;
-  right: 20px;
+  align-self: flex-end;
+  margin-top: auto;
+  position: static;
 }
 
 .section-title {
@@ -737,9 +746,11 @@ p {
   .print-preview { padding: 32px 20px; }
   .preview-toolbar { align-items: flex-start; flex-direction: column; }
   .action-card .secondary-button {
+    align-self: flex-start;
     margin-top: 18px;
     position: static;
   }
+  .action-card .metric-meta { padding-bottom: 0; }
 }
 
 @media (max-width: 480px) {
