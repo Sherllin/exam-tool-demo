@@ -5,13 +5,24 @@ import { useMemo, useRef, useState } from "react";
 import { gradeEssay, gradeEssayBatch } from "@/lib/api";
 import type { BatchEssayItem, BatchGradeResponse, EssayGrade } from "@/lib/types";
 
-const DEMO_ESSAY = `Last weekend I went to the park with my family. We had a picnic under the big tree. I flew a kite with my little brother. The weather was sunny and warm. I was very happy because we spent time together. My mother said the most important thing is not the food but the time with family.`;
+const DEMO_ESSAY = `Dear Li Hua,
 
-const DEMO_BATCH = `1001,张伟,Last weekend I went to the park with my family. We had a picnic under the big tree. I flew a kite with my little brother.
-1002,李娜,Online learning is very popular now. We can study at home. But sometimes I feel boring because I can't see my classmates. I think we should use computer carefully.
-1003,王强,Last year I go to park with my family. We have picnic. I eat too much food. Then I feel very sick. My mother is very worry. She take me to hospital.`;
+I'm writing to invite you to visit the City History Museum with me this Saturday. The museum has just opened a new exhibition about the history of our city, with over three hundred photos and objects from the past century. I believe we can learn a lot about how people lived here before us.
 
-const DIMENSION_LABELS: Array<{ key: keyof EssayGrade; label: string; max: number }> = [
+We can meet at the school gate at nine in the morning and take bus No. 12 together. The visit takes about two hours, and the ticket is free for students. After that, we can have lunch at the noodle shop near the museum.
+
+I really hope you can come. Please let me know if you are free this weekend.
+
+Yours,
+Zhang Wei`;
+
+const DEMO_BATCH = `2026010101,张子涵,Dear Mr. Smith, I am writing to apply for the position of volunteer guide in the city library this summer. I have been interested in reading since childhood, and I often help my classmates find books they need. Last year, I took part in a reading club and learned how to introduce books to others. I am patient and friendly, and I can communicate with visitors in English. I believe this experience will help me improve my speaking and learn to serve the community. I would be very grateful if you could give me this opportunity.
+2026010228,刘思远,Online learning is very popular now. We can study at home. But sometimes I feel boring because I can't see my classmates. I think we should use computer carefully. Online learning have many advantages and disadvantages.
+2026010305,陈雨桐,Last weekend I go to the park with my family. We have picnic under the tree. I eat too much food. Then I feel very sick. My mother is very worry. She take me to hospital.`;
+
+type ScoreDimensionKey = "content" | "language" | "structure" | "vocabulary";
+
+const DIMENSION_LABELS: Array<{ key: ScoreDimensionKey; label: string; max: number }> = [
   { key: "content", label: "内容", max: 40 },
   { key: "language", label: "语言", max: 30 },
   { key: "structure", label: "结构", max: 15 },
@@ -28,8 +39,8 @@ interface ParsedBatch {
 function levelClass(level: string): string {
   if (level === "优秀") return "status-green";
   if (level === "良好") return "status-blue";
-  if (level === "中等") return "status-blue";
-  if (level === "较差") return "status-orange";
+  if (level === "中等") return "status-orange";
+  if (level === "较差") return "status-red";
   return "status-gray";
 }
 
@@ -314,6 +325,12 @@ export default function EssayGradingPage() {
                     <div className="metric-value">
                       {grade[dimension.key]}
                       <span className="metric-meta"> / {dimension.max} 分</span>
+                    </div>
+                    <div className="dim-bar-track" aria-hidden="true">
+                      <div
+                        className="dim-bar-fill"
+                        style={{ width: `${(grade[dimension.key] / dimension.max) * 100}%` }}
+                      />
                     </div>
                   </div>
                 ))}

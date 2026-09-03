@@ -27,7 +27,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="app-shell">
       <aside className="sidebar no-print" aria-label="主导航">
-        <div className="brand">智阅考试工具</div>
+        <div className="brand">
+          <span className="brand-seal" aria-hidden="true">智阅</span>
+          <div>
+            <div className="brand-name">智阅考试工具</div>
+            <div className="brand-sub">EXAM DESK · DEMO</div>
+          </div>
+        </div>
         <div className="nav-section">考试运营</div>
         <nav className="nav-list">
           {navigation.map((item) => {
@@ -45,7 +51,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <div className="sidebar-footer">帮助与反馈</div>
+        <div className="sidebar-footer">
+          演示环境 · 数据为仿真模拟
+          <br />
+          帮助与反馈：请咨询教务系统管理员
+        </div>
       </aside>
 
       <div className="main-area">

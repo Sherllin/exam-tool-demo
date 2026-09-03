@@ -25,6 +25,13 @@ function scoreValue(student: StudentScore, fieldId: string): string | number {
   return value ?? "—";
 }
 
+/** 150 分制下低于 90 分（不及格）的成绩以朱砂红标出，模拟阅卷批注。 */
+function scoreClass(fieldId: string, value: string | number): string {
+  if (typeof value !== "number") return "";
+  if (fieldId === "total") return value < 270 ? "score-low" : "";
+  return value < 90 ? "score-low" : "";
+}
+
 
 export function PrintDesigner({
   data,
@@ -42,6 +49,9 @@ export function PrintDesigner({
   const [suggesting, setSuggesting] = useState(false);
 
   const visibleFields = appliedFields.filter((field) => field.visible);
+  const classNames = Array.from(new Set(data.students.map((s) => s.class_name)));
+  const classLabel =
+    classNames.length === 1 ? classNames[0] : `${classNames.length} 个班级`;
 
   async function handleSuggestTitle() {
     setSuggesting(true);
@@ -175,7 +185,10 @@ export function PrintDesigner({
         <article className="print-preview" data-testid="print-preview">
           <div className="print-title-block">
             <h2>{appliedTitle}</h2>
-            <p>{data.exam.grade} · 高二（1）班</p>
+            <p>
+              {data.exam.grade} · {classLabel}
+              {data.exam.exam_date ? ` · 考试日期 ${data.exam.exam_date}` : ""}
+            </p>
           </div>
           <div className="table-scroll">
             <table className="data-table score-table">
@@ -190,7 +203,12 @@ export function PrintDesigner({
                 {data.students.map((student) => (
                   <tr key={student.student_no}>
                     {visibleFields.map((field) => (
-                      <td key={field.id}>{scoreValue(student, field.id)}</td>
+                      <td
+                        key={field.id}
+                        className={`${scoreClass(field.id, scoreValue(student, field.id))}${field.id === "total" ? " total-score" : ""}${field.kind === "score" ? " score-cell" : ""}`}
+                      >
+                        {scoreValue(student, field.id)}
+                      </td>
                     ))}
                   </tr>
                 ))}
@@ -199,7 +217,7 @@ export function PrintDesigner({
           </div>
           <div className="print-footer">
             <span>{data.sample_notice}</span>
-            <span>生成时间：Demo</span>
+            <span className="print-seal" aria-hidden="true">成绩专用章</span>
           </div>
         </article>
       </section>

@@ -26,8 +26,15 @@ export function AverageTable({ data }: { data: ClassAverageData }) {
           <tbody>
             {data.rows.map((row) => (
               <tr key={row.class_name}>
-                <th scope="row">{row.class_name}</th>
-                <td>{row.student_count}</td>
+                <th scope="row">
+                  {row.class_name}
+                  <span
+                    className={`class-type-tag ${row.class_type === "重点班" ? "elite" : "regular"}`}
+                  >
+                    {row.class_type}
+                  </span>
+                </th>
+                <td className="score-cell">{row.student_count}</td>
                 <td className="score-cell total-score">{row.total_average.toFixed(1)}</td>
                 {data.subjects.map((subject) => (
                   <td className="score-cell" key={subject}>

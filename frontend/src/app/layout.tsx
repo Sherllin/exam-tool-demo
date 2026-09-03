@@ -7,8 +7,9 @@ import "./globals.css";
 
 
 export const metadata: Metadata = {
-  title: "智阅考试工具 Demo",
-  description: "成绩打印轻量配置与班级平均分基础对比 Demo",
+  title: "智阅考试工具 · 成绩发布与 AI 阅卷演示",
+  description:
+    "成绩发布总览、打印轻量配置、班级平均分对比与英语作文 AI 阅卷演示系统（数据为仿真模拟）。",
 };
 
 

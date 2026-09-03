@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { PrintDesigner } from "@/components/print-designer";
@@ -19,16 +18,22 @@ export default function PrintPage() {
   }, []);
 
   return (
-    <div className="page-stack">
+    <div className="page-stack print-page-stack">
       <section className="page-heading no-print">
         <div>
           <h1>成绩打印配置</h1>
           <p>当前考试的一份轻量配置，不保存为多模板</p>
         </div>
-        <Link className="text-button" href="/">返回成绩发布</Link>
+        <span className="status-tag status-orange no-print">待样例复核</span>
       </section>
       {error ? <div className="state-card error-state">{error}</div> : null}
-      {!error && !data ? <div className="state-card">正在加载打印数据…</div> : null}
+      {!error && !data ? (
+        <div className="state-card skeleton-card" aria-busy="true" aria-label="正在加载打印数据">
+          <div className="skeleton skeleton-line mid" />
+          <div className="skeleton skeleton-line wide" />
+          <div className="skeleton skeleton-line short" />
+        </div>
+      ) : null}
       {data ? <PrintDesigner data={data} /> : null}
     </div>
   );

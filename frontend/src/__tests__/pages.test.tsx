@@ -17,10 +17,11 @@ const dashboardData: DashboardData = {
     id: "exam-2026-09",
     name: "高二年级第一次月考",
     grade: "高二",
+    exam_date: "2026-09-26",
   },
   class_count: 12,
   candidate_count: 624,
-  data_status: "脱敏演示数据",
+  data_status: "仿真模拟数据",
   scope_notice: "待真实客户样例复核",
 };
 
@@ -55,6 +56,7 @@ const averageData: ClassAverageData = {
   rows: [
     {
       class_name: "高二（1）班",
+      class_type: "重点班",
       student_count: 52,
       total_average: 267.5,
       subject_averages: { 语文: 88.4, 数学: 91.2, 英语: 87.9 },
@@ -117,6 +119,6 @@ describe("PRD-first pages", () => {
     expect(screen.getByRole("columnheader", { name: "语文平均分" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "数学平均分" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "英语平均分" })).toBeVisible();
-    expect(screen.getByRole("rowheader", { name: "高二（1）班" })).toBeVisible();
+    expect(screen.getByRole("rowheader", { name: /高二（1）班/ })).toBeVisible();
   });
 });

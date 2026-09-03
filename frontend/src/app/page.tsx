@@ -16,6 +16,14 @@ export default function DashboardPage() {
   }, []);
 
   if (error) return <div className="state-card error-state">{error}</div>;
-  if (!data) return <div className="state-card">正在加载成绩总览…</div>;
+  if (!data) {
+    return (
+      <div className="state-card skeleton-card" aria-busy="true" aria-label="正在加载成绩总览">
+        <div className="skeleton skeleton-line mid" />
+        <div className="skeleton skeleton-line wide" />
+        <div className="skeleton skeleton-line short" />
+      </div>
+    );
+  }
   return <Dashboard data={data} />;
 }

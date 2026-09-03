@@ -12,6 +12,7 @@ class ExamSummary(BaseModel):
     id: str
     name: str
     grade: str
+    exam_date: str = ""
 
 
 class DashboardResponse(BaseModel):
@@ -49,6 +50,7 @@ class PrintDataResponse(BaseModel):
 
 class ClassAverageRow(BaseModel):
     class_name: str
+    class_type: str = "平行班"
     student_count: int = Field(gt=0)
     total_average: float
     subject_averages: dict[str, float]

@@ -4,6 +4,7 @@ export interface ExamSummary {
   id: string;
   name: string;
   grade: string;
+  exam_date: string;
 }
 
 export interface DashboardData {
@@ -48,6 +49,7 @@ export interface PrintData {
 
 export interface ClassAverageRow {
   class_name: string;
+  class_type: string;
   student_count: number;
   total_average: number;
   subject_averages: Record<string, number>;

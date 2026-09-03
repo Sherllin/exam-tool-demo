@@ -3,7 +3,9 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 
 from app.demo_data import (
+    CANDIDATE_COUNT,
     CLASS_AVERAGES,
+    CLASS_COUNT,
     DEMO_EXAM,
     PRINT_FIELDS,
     STUDENT_SCORES,
@@ -46,10 +48,13 @@ def health() -> HealthResponse:
 def dashboard() -> DashboardResponse:
     return DashboardResponse(
         exam=DEMO_EXAM,
-        class_count=12,
-        candidate_count=624,
-        data_status="脱敏演示数据",
-        scope_notice="打印字段与统计口径待真实客户样例和业务确认",
+        class_count=CLASS_COUNT,
+        candidate_count=CANDIDATE_COUNT,
+        data_status="仿真模拟数据",
+        scope_notice=(
+            f"全年级 {CANDIDATE_COUNT} 名考生名单与成绩均为程序生成的仿真样例，"
+            "仅用于功能演示；打印字段与统计口径待真实客户样例确认"
+        ),
     )
 
 
@@ -64,7 +69,7 @@ def print_data(exam_id: str) -> PrintDataResponse:
         default_title=f"{DEMO_EXAM.name}成绩单",
         fields=PRINT_FIELDS,
         students=STUDENT_SCORES,
-        sample_notice="脱敏演示数据，待真实客户样例复核",
+        sample_notice="仿真模拟数据，仅用于功能演示",
     )
 
 

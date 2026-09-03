@@ -13,7 +13,7 @@
 
 ## 明确边界
 
-- 数据是脱敏演示数据，不能替代真实客户样例验收。
+- 数据为程序生成的仿真模拟数据（12 个班级、624 名考生、语数英 150 分制），不能替代真实客户样例验收。
 - 不保存打印配置，不实现多模板、模板复用、排名、趋势、图表、导出或自动诊断。
 - 缺考统计口径和最终字段/版式仍待业务确认。
 - 作文 AI 阅卷为辅助评分（POC 阶段）：基于模拟数据校准，真实上线前需用真实标注语料重新校准；评分不直接写入成绩。
@@ -43,18 +43,19 @@ make dev
 
 ## 可选：连接 LLM
 
-默认无需密钥即可完整演示。若要调用兼容 Chat Completions 的模型服务：
+默认已通过根目录 `.env` 配置拓维 LLM（deepseek-v4-flash）用于标题建议与英语作文 AI 评分；未配置或调用失败时自动回退到本地演示逻辑。
 
 ```bash
-cp backend/.env.example backend/.env
+cp .env.example .env
 ```
 
 然后填写：
 
 ```dotenv
-LLM_BASE_URL=https://your-provider.example/v1
+LLM_BASE_URL=https://llm.talkweb.com.cn/v1
 LLM_API_KEY=your-key
-LLM_MODEL=your-model
+LLM_MODEL=deepseek-v4-flash
+LLM_TIMEOUT_SECONDS=60
 ```
 
 密钥只由 FastAPI 读取，不会发送到浏览器。重启 `make dev` 后配置生效。

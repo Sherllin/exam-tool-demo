@@ -46,7 +46,7 @@ def test_make_dev_stops_without_double_wait_error() -> None:
     )
     try:
         wait_for_url(HEALTH_URL, '"service":"exam-tool-demo"')
-        wait_for_url(FRONTEND_URL, "智阅考试工具 Demo")
+        wait_for_url(FRONTEND_URL, "智阅考试工具")
         os.killpg(process.pid, signal.SIGINT)
         output, _ = process.communicate(timeout=10)
     finally:

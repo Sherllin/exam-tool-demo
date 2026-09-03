@@ -9,7 +9,12 @@ export function Dashboard({ data }: { data: DashboardData }) {
       <section className="page-heading">
         <div>
           <h1>成绩发布</h1>
-          <p>模拟考试 · {data.exam.name}</p>
+          <p>
+            模拟考试 · {data.exam.name}
+            {data.exam.exam_date ? (
+              <span className="exam-date-chip"> · {data.exam.exam_date}</span>
+            ) : null}
+          </p>
         </div>
         <span className="status-tag status-blue">{data.data_status}</span>
       </section>
@@ -20,11 +25,13 @@ export function Dashboard({ data }: { data: DashboardData }) {
       </div>
 
       <section className="metric-grid" aria-label="本期功能概览">
-        <article className="metric-card">
-          <div className="metric-label">成绩数据状态</div>
-          <div className="metric-value success">已就绪</div>
-          <div className="metric-meta">
-            {data.class_count} 个班级 · {data.candidate_count} 名考生
+        <article className="metric-card metric-featured">
+          <span className="seal-stamp seal-stamp-in" aria-hidden="true">已就绪</span>
+          <div>
+            <div className="metric-label">成绩数据状态</div>
+            <div className="metric-meta">
+              {data.class_count} 个班级 · {data.candidate_count} 名考生
+            </div>
           </div>
         </article>
 
@@ -45,6 +52,15 @@ export function Dashboard({ data }: { data: DashboardData }) {
             查看班级对比
           </Link>
         </article>
+
+        <article className="metric-card action-card">
+          <div className="metric-label">英语作文 AI 阅卷</div>
+          <div className="metric-feature">四维评分 · 分段校准</div>
+          <div className="metric-meta">单篇测试与批量阅卷，已接入 LLM</div>
+          <Link className="secondary-button" href="/essay-grading">
+            体验 AI 阅卷
+          </Link>
+        </article>
       </section>
 
       <section>
@@ -63,16 +79,16 @@ export function Dashboard({ data }: { data: DashboardData }) {
             <span className="status-tag status-blue">本期实现</span>
           </div>
           <div className="check-row">
+            <span className="check-dot green" aria-hidden="true" />
+            <strong>英语作文 AI</strong>
+            <span>四维评分 + 分段校准，已接入真实 LLM 接口</span>
+            <span className="status-tag status-green">本期实现</span>
+          </div>
+          <div className="check-row">
             <span className="check-dot orange" aria-hidden="true" />
             <strong>真实样例与统计口径</strong>
             <span>字段、版式和缺考规则仍需业务最终确认</span>
             <span className="status-tag status-orange">待确认</span>
-          </div>
-          <div className="check-row">
-            <span className="check-dot gray" aria-hidden="true" />
-            <strong>英语作文 AI</strong>
-            <span>独立 POC/后续专项，不属于当前版本</span>
-            <span className="status-tag status-gray">不在本期</span>
           </div>
         </div>
       </section>

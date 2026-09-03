@@ -23,9 +23,10 @@ async def test_dashboard_describes_demo_scope_without_unconfirmed_templates() ->
     body = response.json()
     assert body["exam"]["id"] == "exam-2026-09"
     assert body["exam"]["grade"] == "高二"
+    assert body["exam"]["exam_date"] == "2026-09-26"
     assert body["class_count"] == 12
     assert body["candidate_count"] == 624
-    assert body["data_status"] == "脱敏演示数据"
+    assert body["data_status"] == "仿真模拟数据"
     assert "template_count" not in body
 
 
@@ -43,12 +44,13 @@ async def test_print_data_exposes_supported_fields_and_preserves_score_totals() 
         "english",
         "total",
     ]
-    assert body["sample_notice"] == "脱敏演示数据，待真实客户样例复核"
+    assert body["sample_notice"] == "仿真模拟数据，仅用于功能演示"
     for student in body["students"]:
         assert (
             student["total"]
             == student["chinese"] + student["math"] + student["english"]
         )
+        assert student["class_name"] == "高二（1）班"
 
 
 async def test_class_averages_are_scoped_to_one_exam_and_grade() -> None:
@@ -63,15 +65,18 @@ async def test_class_averages_are_scoped_to_one_exam_and_grade() -> None:
     assert body["exam_id"] == "exam-2026-09"
     assert body["grade"] == "高二"
     assert body["subjects"] == ["语文", "数学", "英语"]
-    assert len(body["rows"]) == 6
+    assert len(body["rows"]) == 12
     assert set(body["rows"][0]) == {
         "class_name",
+        "class_type",
         "student_count",
         "total_average",
         "subject_averages",
     }
     assert set(body["rows"][0]["subject_averages"]) == {"语文", "数学", "英语"}
     assert body["method_note"].startswith("Demo 口径")
+    # 12 个班的人数合计应与总览中的考生数一致
+    assert sum(row["student_count"] for row in body["rows"]) == 624
 
 
 async def test_unknown_exam_or_grade_is_not_mixed_into_results() -> None:
